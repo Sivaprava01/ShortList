@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --accent: 99 102 241;
+    --accent-light: 129 140 248;
+    --bg-primary: 248 250 252;
+    --bg-card: 255 255 255;
+    --text-primary: 15 23 42;
+    --text-secondary: 100 116 139;
+    --border: 226 232 240;
+    --sidebar-bg: 255 255 255;
+    --hover: 241 245 249;
+  }
+
+  .dark {
+    --accent: 129 140 248;
+    --accent-light: 165 180 252;
+    --bg-primary: 15 23 42;
+    --bg-card: 30 41 59;
+    --text-primary: 241 245 249;
+    --text-secondary: 148 163 184;
+    --border: 51 65 85;
+    --sidebar-bg: 30 41 59;
+    --hover: 51 65 85;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: rgb(var(--bg-primary));
+    color: rgb(var(--text-primary));
+    transition: background-color 0.3s ease, color 0.3s ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgb(var(--bg-primary));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(var(--border));
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(var(--text-secondary));
+  }
+}
+
+@layer components {
+  /* Custom CSS variable classes */
+  .bg-accent { background-color: rgb(var(--accent)); }
+  .bg-accent-light { background-color: rgb(var(--accent-light)); }
+  .bg-primary { background-color: rgb(var(--bg-primary)); }
+  .bg-card { background-color: rgb(var(--bg-card)); }
+  .bg-sidebar { background-color: rgb(var(--sidebar-bg)); }
+  .bg-hover { background-color: rgb(var(--hover)); }
+  
+  .text-accent { color: rgb(var(--accent)); }
+  .text-accent-light { color: rgb(var(--accent-light)); }
+  .text-primary { color: rgb(var(--text-primary)); }
+  .text-secondary { color: rgb(var(--text-secondary)); }
+  
+  .border-custom { border-color: rgb(var(--border)); }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.4s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  /* Staggered animation delays */
+  .delay-100 { animation-delay: 0.1s; }
+  .delay-200 { animation-delay: 0.2s; }
+  .delay-300 { animation-delay: 0.3s; }
+  .delay-400 { animation-delay: 0.4s; }
+}

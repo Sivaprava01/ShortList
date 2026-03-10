@@ -48,3 +48,25 @@ exports.runMatchingForJob = async (req, res) => {
   }
 
 };
+
+// GET MATCHES FOR A JOB (Recruiter View)
+exports.getMatchesForJob = async (req, res) => {
+  try {
+
+    const matches = await Match.find({ jobId: req.params.jobId })
+      .populate("candidateId")
+      .sort({ finalScore: -1 });
+
+    const result = matches.map(match => ({
+      candidateId: match.candidateId._id,
+      candidateProfile: match.candidateId,
+      finalScore: match.finalScore,
+      scoreBreakdown: match.breakdown
+    }));
+
+    res.json(result);
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
