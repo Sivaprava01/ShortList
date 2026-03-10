@@ -25,11 +25,12 @@ export default function MyJobs() {
   const handleRunMatching = async (jobId) => {
     setRunningJobId(jobId);
     try {
-      await runMatching(jobId);
-      alert('Matching complete! View results in the Matches tab.');
+      const response = await runMatching(jobId);
+      const message = response.data.message || 'Matching complete!';
+      alert(`${message} View results in the Matches tab.`);
     } catch (err) {
       console.error(err);
-      alert('Failed to run matching');
+      alert('Failed to run matching: ' + (err.response?.data?.message || err.message));
     } finally {
       setRunningJobId(null);
     }

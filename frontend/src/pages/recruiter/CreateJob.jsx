@@ -39,8 +39,8 @@ export default function CreateJob() {
   const removeSkill = (field, i) => setForm(f => ({ ...f, [field]: f[field].filter((_, idx) => idx !== i) }));
   const updateSkill = (field, i, val) => setForm(f => ({ ...f, [field]: f[field].map((s, idx) => idx === i ? val : s) }));
 
-  const inputClass = "w-full px-4 py-2.5 bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:border-transparent transition-all text-sm";
-  const labelClass = "block text-sm font-medium text-[var(--text-primary)] mb-1.5";
+  const inputClass = "w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm";
+  const labelClass = "block text-sm font-medium text-gray-900 mb-1.5";
 
   return (
     <div className="space-y-6 pb-8">
@@ -79,7 +79,7 @@ export default function CreateJob() {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-medium text-[var(--text-primary)]">Must-Have Skills</label>
-              <button type="button" onClick={() => addSkill('mustHaveSkills')} className="flex items-center gap-1 text-sm text-[var(--accent)] font-medium hover:underline">
+              <button type="button" onClick={() => addSkill('mustHaveSkills')} className="flex items-center gap-1 text-sm text-blue-600 font-medium hover:text-blue-700">
                 <HiOutlinePlusCircle className="w-4 h-4" /> Add
               </button>
             </div>
@@ -133,7 +133,7 @@ export default function CreateJob() {
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 px-8 py-3 bg-[var(--accent)] text-white rounded-xl font-semibold hover:opacity-90 transition-all shadow-lg shadow-[var(--accent)]/25 disabled:opacity-50"
+            className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all disabled:opacity-50"
           >
             {loading ? (
               <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Creating...</>

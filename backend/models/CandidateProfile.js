@@ -10,8 +10,7 @@ const candidateProfileSchema = new mongoose.Schema({
 
   fullName: String,
   headline: String,
-
-  roles: [String],
+  bio: String,
 
   skills: [
     {
@@ -24,21 +23,27 @@ const candidateProfileSchema = new mongoose.Schema({
     }
   ],
 
+  // Enhanced experience structure
+  experience: [
+    {
+      company: String,
+      role: String,
+      years: Number,
+      techStack: [String],
+      description: String
+    }
+  ],
+
+  // Keep experienceYears for backward compatibility and quick filtering
   experienceYears: Number,
 
-  education: {
-    degree: String,
-    institution: String,
-    year: Number,
-    GPA: Number
-  },
-
-  workInternships: [
+  // Enhanced education - now supports multiple entries
+  education: [
     {
-      role: String,
-      company: String,
-      duration: String,
-      achievements: [String]
+      degree: String,
+      institution: String,
+      year: Number,
+      GPA: Number
     }
   ],
 
@@ -51,14 +56,8 @@ const candidateProfileSchema = new mongoose.Schema({
     }
   ],
 
-  achievementsCertifications: [String],
-
   portfolioLinks: [String],
-
-  bio: String,
-
   codingLinks: [String],
-
   resumeUrl: String,
 
   visibility: {
@@ -70,11 +69,18 @@ const candidateProfileSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
-  }
+  },
 
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
-module.exports = mongoose.model(
-  "CandidateProfile",
-  candidateProfileSchema
-);
+// Update the updatedAt field on save
+candidateProfileSchema.pre('save', function(next) {
+  this.updatedAt = Date.now();
+  next();
+});
+
+module.exports = mongoose.model("CandidateProfile", candidateProfileSchema);

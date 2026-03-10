@@ -15,9 +15,10 @@ export default function ProfileBuilder() {
   const [form, setForm] = useState({
     fullName: '', headline: '', bio: '',
     skills: [{ name: '', level: 'beginner', years: 0 }],
+    experience: [{ company: '', role: '', years: 0, techStack: [], description: '' }],
     experienceYears: 0,
     projects: [{ title: '', description: '', techStack: [], link: '' }],
-    education: { degree: '', institution: '', year: '', GPA: '' },
+    education: [{ degree: '', institution: '', year: '', GPA: '' }],
     portfolioLinks: [''],
     codingLinks: [''],
     resumeUrl: ''
@@ -33,11 +34,14 @@ export default function ProfileBuilder() {
             headline: res.data.headline || '',
             bio: res.data.bio || '',
             skills: res.data.skills?.length ? res.data.skills : [{ name: '', level: 'beginner', years: 0 }],
+            experience: res.data.experience?.length ? res.data.experience.map(exp => ({
+              ...exp, techStack: exp.techStack || []
+            })) : [{ company: '', role: '', years: 0, techStack: [], description: '' }],
             experienceYears: res.data.experienceYears || 0,
             projects: res.data.projects?.length ? res.data.projects.map(p => ({
               ...p, techStack: p.techStack || []
             })) : [{ title: '', description: '', techStack: [], link: '' }],
-            education: res.data.education || { degree: '', institution: '', year: '', GPA: '' },
+            education: res.data.education?.length ? res.data.education : [{ degree: '', institution: '', year: '', GPA: '' }],
             portfolioLinks: res.data.portfolioLinks?.length ? res.data.portfolioLinks : [''],
             codingLinks: res.data.codingLinks?.length ? res.data.codingLinks : [''],
             resumeUrl: res.data.resumeUrl || ''
@@ -59,9 +63,13 @@ export default function ProfileBuilder() {
       const data = {
         ...form,
         skills: form.skills.filter(s => s.name.trim()),
+        experience: form.experience.filter(exp => exp.company.trim() || exp.role.trim()),
         projects: form.projects.filter(p => p.title.trim()),
+        education: form.education.filter(edu => edu.degree.trim() || edu.institution.trim()),
         portfolioLinks: form.portfolioLinks.filter(l => l.trim()),
         codingLinks: form.codingLinks.filter(l => l.trim()),
+        // Calculate total experience years from experience entries
+        experienceYears: form.experience.reduce((total, exp) => total + (exp.years || 0), 0) || form.experienceYears
       };
       await createOrUpdateProfile(data);
       setSaved(true);
@@ -77,9 +85,17 @@ export default function ProfileBuilder() {
   const removeSkill = (i) => setForm(f => ({ ...f, skills: f.skills.filter((_, idx) => idx !== i) }));
   const updateSkill = (i, field, val) => setForm(f => ({ ...f, skills: f.skills.map((s, idx) => idx === i ? { ...s, [field]: val } : s) }));
 
+  const addExperience = () => setForm(f => ({ ...f, experience: [...f.experience, { company: '', role: '', years: 0, techStack: [], description: '' }] }));
+  const removeExperience = (i) => setForm(f => ({ ...f, experience: f.experience.filter((_, idx) => idx !== i) }));
+  const updateExperience = (i, field, val) => setForm(f => ({ ...f, experience: f.experience.map((exp, idx) => idx === i ? { ...exp, [field]: val } : exp) }));
+
   const addProject = () => setForm(f => ({ ...f, projects: [...f.projects, { title: '', description: '', techStack: [], link: '' }] }));
   const removeProject = (i) => setForm(f => ({ ...f, projects: f.projects.filter((_, idx) => idx !== i) }));
   const updateProject = (i, field, val) => setForm(f => ({ ...f, projects: f.projects.map((p, idx) => idx === i ? { ...p, [field]: val } : p) }));
+
+  const addEducation = () => setForm(f => ({ ...f, education: [...f.education, { degree: '', institution: '', year: '', GPA: '' }] }));
+  const removeEducation = (i) => setForm(f => ({ ...f, education: f.education.filter((_, idx) => idx !== i) }));
+  const updateEducation = (i, field, val) => setForm(f => ({ ...f, education: f.education.map((edu, idx) => idx === i ? { ...edu, [field]: val } : edu) }));
 
   const addLink = (field) => setForm(f => ({ ...f, [field]: [...f[field], ''] }));
   const removeLink = (field, i) => setForm(f => ({ ...f, [field]: f[field].filter((_, idx) => idx !== i) }));
@@ -93,9 +109,9 @@ export default function ProfileBuilder() {
     );
   }
 
-  const sectionClass = "bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-6 space-y-4";
-  const labelClass = "block text-sm font-medium text-[var(--text-primary)] mb-1.5";
-  const inputClass = "w-full px-4 py-2.5 bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all text-sm";
+  const sectionClass = "bg-white rounded-2xl border border-gray-200 p-6 space-y-4";
+  const labelClass = "block text-sm font-medium text-gray-900 mb-1.5";
+  const inputClass = "w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm";
 
   return (
     <div className="space-y-6 pb-8">
@@ -173,10 +189,48 @@ export default function ProfileBuilder() {
 
       {/* Experience */}
       <div className={sectionClass}>
-        <h2 className="text-lg font-semibold text-[var(--text-primary)]">Experience</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">Work Experience</h2>
+          <button onClick={addExperience} className="flex items-center gap-1 text-sm text-indigo-600 font-medium hover:underline">
+            <HiOutlinePlusCircle className="w-4 h-4" /> Add Experience
+          </button>
+        </div>
+        {form.experience.map((exp, i) => (
+          <div key={i} className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">Experience {i + 1}</span>
+              {form.experience.length > 1 && (
+                <button onClick={() => removeExperience(i)} className="text-red-500 hover:underline text-sm">Remove</button>
+              )}
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div>
+                <label className={labelClass}>Company</label>
+                <input className={inputClass} value={exp.company} onChange={e => updateExperience(i, 'company', e.target.value)} placeholder="Google" />
+              </div>
+              <div>
+                <label className={labelClass}>Role</label>
+                <input className={inputClass} value={exp.role} onChange={e => updateExperience(i, 'role', e.target.value)} placeholder="Software Engineer" />
+              </div>
+            </div>
+            <div className="sm:w-32">
+              <label className={labelClass}>Years</label>
+              <input type="number" min="0" step="0.5" className={inputClass} value={exp.years} onChange={e => updateExperience(i, 'years', Number(e.target.value))} />
+            </div>
+            <div>
+              <label className={labelClass}>Description</label>
+              <textarea className={`${inputClass} h-20 resize-none`} value={exp.description} onChange={e => updateExperience(i, 'description', e.target.value)} placeholder="What did you accomplish in this role?" />
+            </div>
+            <div>
+              <label className={labelClass}>Tech Stack (comma separated)</label>
+              <input className={inputClass} value={exp.techStack.join(', ')} onChange={e => updateExperience(i, 'techStack', e.target.value.split(',').map(s => s.trim()))} placeholder="React, Node.js, MongoDB" />
+            </div>
+          </div>
+        ))}
         <div className="sm:w-48">
-          <label className={labelClass}>Total Years</label>
-          <input type="number" min="0" className={inputClass} value={form.experienceYears} onChange={e => setForm(f => ({ ...f, experienceYears: Number(e.target.value) }))} />
+          <label className={labelClass}>Total Years (auto-calculated)</label>
+          <input type="number" min="0" className={`${inputClass} bg-gray-100`} value={form.experience.reduce((total, exp) => total + (exp.years || 0), 0) || form.experienceYears} onChange={e => setForm(f => ({ ...f, experienceYears: Number(e.target.value) }))} placeholder="Manual override" />
+          <p className="text-xs text-gray-500 mt-1">This is auto-calculated from experience entries above</p>
         </div>
       </div>
 
@@ -220,25 +274,40 @@ export default function ProfileBuilder() {
 
       {/* Education */}
       <div className={sectionClass}>
-        <h2 className="text-lg font-semibold text-[var(--text-primary)]">Education</h2>
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label className={labelClass}>Degree</label>
-            <input className={inputClass} value={form.education.degree} onChange={e => setForm(f => ({ ...f, education: { ...f.education, degree: e.target.value } }))} placeholder="B.Tech" />
-          </div>
-          <div>
-            <label className={labelClass}>Institution</label>
-            <input className={inputClass} value={form.education.institution} onChange={e => setForm(f => ({ ...f, education: { ...f.education, institution: e.target.value } }))} placeholder="VNR VJIET" />
-          </div>
-          <div>
-            <label className={labelClass}>Year</label>
-            <input type="number" className={inputClass} value={form.education.year} onChange={e => setForm(f => ({ ...f, education: { ...f.education, year: e.target.value } }))} placeholder="2025" />
-          </div>
-          <div>
-            <label className={labelClass}>GPA</label>
-            <input type="number" step="0.01" className={inputClass} value={form.education.GPA} onChange={e => setForm(f => ({ ...f, education: { ...f.education, GPA: e.target.value } }))} placeholder="9.0" />
-          </div>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">Education</h2>
+          <button onClick={addEducation} className="flex items-center gap-1 text-sm text-indigo-600 font-medium hover:underline">
+            <HiOutlinePlusCircle className="w-4 h-4" /> Add Education
+          </button>
         </div>
+        {form.education.map((edu, i) => (
+          <div key={i} className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-600">Education {i + 1}</span>
+              {form.education.length > 1 && (
+                <button onClick={() => removeEducation(i)} className="text-red-500 hover:underline text-sm">Remove</button>
+              )}
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className={labelClass}>Degree</label>
+                <input className={inputClass} value={edu.degree} onChange={e => updateEducation(i, 'degree', e.target.value)} placeholder="B.Tech Computer Science" />
+              </div>
+              <div>
+                <label className={labelClass}>Institution</label>
+                <input className={inputClass} value={edu.institution} onChange={e => updateEducation(i, 'institution', e.target.value)} placeholder="VNR VJIET" />
+              </div>
+              <div>
+                <label className={labelClass}>Year</label>
+                <input type="number" className={inputClass} value={edu.year} onChange={e => updateEducation(i, 'year', e.target.value)} placeholder="2025" />
+              </div>
+              <div>
+                <label className={labelClass}>GPA</label>
+                <input type="number" step="0.01" className={inputClass} value={edu.GPA} onChange={e => updateEducation(i, 'GPA', e.target.value)} placeholder="9.0" />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       {/* Links */}

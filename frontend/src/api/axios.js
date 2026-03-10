@@ -19,7 +19,7 @@ export const createOrUpdateProfile = (data) => API.post('/candidate/profile', da
 export const getMyProfile = () => API.get('/candidate/profile/me');
 export const getProfileById = (id) => API.get(`/candidate/profile/${id}`);
 
-export const getCandidateMatches = () => API.get('/candidate/matches');
+export const getCandidateMatches = () => API.get('/match/candidate');
 
 export const createJob = (data) => API.post('/jobs', data);
 export const getMyJobs = () => API.get('/jobs/my-jobs');

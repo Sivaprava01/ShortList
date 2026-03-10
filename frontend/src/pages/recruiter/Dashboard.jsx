@@ -47,7 +47,7 @@ export default function RecruiterDashboard() {
           <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">Recruiter Dashboard</h2>
           <p className="text-[var(--text-secondary)] mt-1">Track job posts and run matching from one place.</p>
         </div>
-        <Link to="/recruiter/create-job" className="inline-flex items-center gap-2 px-6 py-2.5 bg-[var(--accent)] text-white rounded-xl font-medium hover:opacity-90 transition-all shadow-lg shadow-[var(--accent)]/25 text-sm">
+        <Link to="/recruiter/create-job" className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all disabled:opacity-50">
           <HiOutlinePlusCircle className="w-5 h-5" />
           Create Job
         </Link>
