@@ -31,4 +31,9 @@ export const getMatchesForJob = (jobId) => API.get(`/match/job/${jobId}`);
 export const getNotifications = () => API.get('/notifications');
 export const markNotificationRead = (id) => API.put(`/notifications/read/${id}`);
 
+export const applyToJob = (jobId) => API.post(`/applications/apply/${jobId}`);
+export const getMyApplications = () => API.get('/applications/my-applications');
+export const getApplicationsForJob = (jobId) => API.get(`/applications/job/${jobId}`);
+export const updateApplicationStatus = (id, status) => API.put(`/applications/${id}/status`, { status });
+
 export default API;

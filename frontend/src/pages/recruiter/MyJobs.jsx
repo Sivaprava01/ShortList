@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getMyJobs, runMatching } from '../../api/axios';
-import { HiOutlinePlay, HiOutlineEye, HiOutlineMapPin } from 'react-icons/hi2';
+import { HiOutlinePlay, HiOutlineEye, HiOutlineMapPin, HiOutlineUserGroup } from 'react-icons/hi2';
 
 export default function MyJobs() {
   const [jobs, setJobs] = useState([]);
@@ -107,6 +107,13 @@ export default function MyJobs() {
                           <HiOutlineEye className="w-3.5 h-3.5" />
                           Matches
                         </Link>
+                        <Link
+                          to={`/recruiter/jobs/${job._id}/applicants`}
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-purple-600 dark:text-purple-400 bg-purple-500/10 rounded-lg hover:bg-purple-500/20 transition-colors"
+                        >
+                          <HiOutlineUserGroup className="w-3.5 h-3.5" />
+                          Applicants
+                        </Link>
                       </div>
                     </td>
                   </tr>
@@ -142,7 +149,15 @@ export default function MyJobs() {
                     to={`/recruiter/matches/${job._id}`}
                     className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 rounded-lg"
                   >
-                    <HiOutlineEye className="w-3.5 h-3.5" /> View Matches
+                    <HiOutlineEye className="w-3.5 h-3.5" />
+                    View Matches
+                  </Link>
+                  <Link
+                    to={`/recruiter/jobs/${job._id}/applicants`}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-purple-600 dark:text-purple-400 bg-purple-500/10 rounded-lg"
+                  >
+                    <HiOutlineUserGroup className="w-3.5 h-3.5" />
+                    Applicants
                   </Link>
                 </div>
               </div>

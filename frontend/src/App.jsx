@@ -16,6 +16,8 @@ import RecruiterDashboard from './pages/recruiter/Dashboard';
 import CreateJob from './pages/recruiter/CreateJob';
 import MyJobs from './pages/recruiter/MyJobs';
 import Matches from './pages/recruiter/Matches';
+import Applicants from './pages/recruiter/Applicants';
+import Portfolio from './pages/Portfolio';
 
 export default function App() {
   return (
@@ -27,6 +29,7 @@ export default function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/portfolio/:candidateId" element={<Portfolio />} />
 
             {/* Candidate Routes */}
             <Route path="/candidate" element={
@@ -51,6 +54,7 @@ export default function App() {
               <Route path="create-job" element={<CreateJob />} />
               <Route path="jobs" element={<MyJobs />} />
               <Route path="matches/:jobId" element={<Matches />} />
+              <Route path="jobs/:jobId/applicants" element={<Applicants />} />
             </Route>
 
             {/* Catch all */}

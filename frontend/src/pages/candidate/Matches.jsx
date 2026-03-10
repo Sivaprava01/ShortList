@@ -1,24 +1,50 @@
 import { useState, useEffect } from 'react';
-import { getCandidateMatches } from '../../api/axios';
-import { HiOutlineBriefcase, HiOutlineMapPin, HiOutlineChartBar, HiOutlineWrenchScrewdriver, HiOutlineAcademicCap, HiOutlineRocketLaunch } from 'react-icons/hi2';
+import { getCandidateMatches, applyToJob, getMyApplications } from '../../api/axios';
+import { HiOutlineBriefcase, HiOutlineMapPin, HiOutlineChartBar, HiOutlineWrenchScrewdriver, HiOutlineAcademicCap, HiOutlineRocketLaunch, HiOutlinePaperAirplane, HiCheck } from 'react-icons/hi2';
 
 export default function MatchedJobs() {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [appliedJobs, setAppliedJobs] = useState(new Set());
+  const [applyingJobId, setApplyingJobId] = useState(null);
 
   useEffect(() => {
-    const fetchMatches = async () => {
+    const fetchData = async () => {
       try {
-        const res = await getCandidateMatches();
-        setMatches(res.data || []);
+        const [matchRes, appRes] = await Promise.all([
+          getCandidateMatches(),
+          getMyApplications()
+        ]);
+        setMatches(matchRes.data || []);
+
+        // Pre-populate applied state from existing applications
+        const appliedSet = new Set();
+        (appRes.data || []).forEach(app => {
+          if (app.jobId?._id) appliedSet.add(app.jobId._id);
+          else if (app.jobId) appliedSet.add(app.jobId);
+        });
+        setAppliedJobs(appliedSet);
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
-    fetchMatches();
+    fetchData();
   }, []);
+
+  const handleApply = async (jobId) => {
+    setApplyingJobId(jobId);
+    try {
+      await applyToJob(jobId);
+      setAppliedJobs(prev => new Set([...prev, jobId]));
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Failed to apply';
+      alert(msg);
+    } finally {
+      setApplyingJobId(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -48,85 +74,115 @@ export default function MatchedJobs() {
           </div>
           
           <div className="grid gap-6">
-            {matches.map((match, i) => (
-              <div key={match.jobId || i} className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg hover:border-indigo-300 transition-all duration-300 animate-fade-in" style={{ animationDelay: `${i * 0.05}s`, animationFillMode: 'both' }}>
-                <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-                  {/* Job Info */}
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
-                          <HiOutlineBriefcase className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-semibold text-gray-900">{match.jobTitle}</h3>
-                          <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                            <HiOutlineMapPin className="w-4 h-4" />
-                            {match.location || 'Remote'}
+            {matches.map((match, i) => {
+              const isApplied = appliedJobs.has(match.jobId);
+              const isApplying = applyingJobId === match.jobId;
+
+              return (
+                <div key={match.jobId || i} className="bg-white rounded-2xl border border-gray-200 p-6 hover:shadow-lg hover:border-indigo-300 transition-all duration-300 animate-fade-in" style={{ animationDelay: `${i * 0.05}s`, animationFillMode: 'both' }}>
+                  <div className="flex flex-col lg:flex-row lg:items-start gap-6">
+                    {/* Job Info */}
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
+                            <HiOutlineBriefcase className="w-6 h-6 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-semibold text-gray-900">{match.jobTitle}</h3>
+                            <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
+                              <HiOutlineMapPin className="w-4 h-4" />
+                              {match.location || 'Remote'}
+                            </div>
                           </div>
                         </div>
+                        
+                        {/* Overall Score */}
+                        <div className="text-center">
+                          <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl">
+                            <HiOutlineChartBar className="w-5 h-5" />
+                            <span className="text-lg font-bold">{match.matchScore}</span>
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">Match Score</div>
+                        </div>
+                      </div>
+
+                      <p className="text-gray-600 leading-relaxed mb-4 line-clamp-3">{match.jobDescription}</p>
+                      
+                      {/* Score Breakdown */}
+                      {match.scoreBreakdown && (
+                        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100">
+                          <div className="text-center">
+                            <div className="flex items-center justify-center gap-1 mb-1">
+                              <HiOutlineWrenchScrewdriver className="w-4 h-4 text-indigo-500" />
+                              <span className="text-sm font-medium text-gray-900">{match.scoreBreakdown.skillScore || 0}</span>
+                            </div>
+                            <div className="text-xs text-gray-500">Skills</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="flex items-center justify-center gap-1 mb-1">
+                              <HiOutlineAcademicCap className="w-4 h-4 text-amber-500" />
+                              <span className="text-sm font-medium text-gray-900">{match.scoreBreakdown.experienceScore || 0}</span>
+                            </div>
+                            <div className="text-xs text-gray-500">Experience</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="flex items-center justify-center gap-1 mb-1">
+                              <HiOutlineRocketLaunch className="w-4 h-4 text-purple-500" />
+                              <span className="text-sm font-medium text-gray-900">{match.scoreBreakdown.projectScore || 0}</span>
+                            </div>
+                            <div className="text-xs text-gray-500">Projects</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Apply Button & Match Status */}
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+                    <div className="text-xs text-gray-500">
+                      Matched on {new Date(match.createdAt).toLocaleDateString()}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        isApplied ? 'bg-green-50 text-green-700' :
+                        match.status === 'notified' ? 'bg-blue-50 text-blue-700' :
+                        match.status === 'viewed' ? 'bg-yellow-50 text-yellow-700' :
+                        'bg-gray-50 text-gray-700'
+                      }`}>
+                        {isApplied ? 'Applied' :
+                         match.status === 'notified' ? 'New Match' :
+                         match.status === 'viewed' ? 'Viewed by Recruiter' :
+                         match.status}
                       </div>
                       
-                      {/* Overall Score */}
-                      <div className="text-center">
-                        <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl">
-                          <HiOutlineChartBar className="w-5 h-5" />
-                          <span className="text-lg font-bold">{match.matchScore}</span>
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1">Match Score</div>
-                      </div>
+                      {isApplied ? (
+                        <button
+                          disabled
+                          className="flex items-center gap-2 px-5 py-2 text-sm font-medium text-green-700 bg-green-50 border border-green-200 rounded-xl cursor-not-allowed"
+                        >
+                          <HiCheck className="w-4 h-4" />
+                          Applied ✓
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleApply(match.jobId)}
+                          disabled={isApplying}
+                          className="flex items-center gap-2 px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-lg shadow-blue-500/25 transition-all disabled:opacity-50"
+                        >
+                          {isApplying ? (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          ) : (
+                            <HiOutlinePaperAirplane className="w-4 h-4" />
+                          )}
+                          {isApplying ? 'Applying...' : 'Apply'}
+                        </button>
+                      )}
                     </div>
-
-                    <p className="text-gray-600 leading-relaxed mb-4 line-clamp-3">{match.jobDescription}</p>
-                    
-                    {/* Score Breakdown */}
-                    {match.scoreBreakdown && (
-                      <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100">
-                        <div className="text-center">
-                          <div className="flex items-center justify-center gap-1 mb-1">
-                            <HiOutlineWrenchScrewdriver className="w-4 h-4 text-indigo-500" />
-                            <span className="text-sm font-medium text-gray-900">{match.scoreBreakdown.skillScore || 0}</span>
-                          </div>
-                          <div className="text-xs text-gray-500">Skills</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="flex items-center justify-center gap-1 mb-1">
-                            <HiOutlineAcademicCap className="w-4 h-4 text-amber-500" />
-                            <span className="text-sm font-medium text-gray-900">{match.scoreBreakdown.experienceScore || 0}</span>
-                          </div>
-                          <div className="text-xs text-gray-500">Experience</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="flex items-center justify-center gap-1 mb-1">
-                            <HiOutlineRocketLaunch className="w-4 h-4 text-purple-500" />
-                            <span className="text-sm font-medium text-gray-900">{match.scoreBreakdown.projectScore || 0}</span>
-                          </div>
-                          <div className="text-xs text-gray-500">Projects</div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
-                
-                {/* Match Status */}
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-                  <div className="text-xs text-gray-500">
-                    Matched on {new Date(match.createdAt).toLocaleDateString()}
-                  </div>
-                  <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    match.status === 'notified' ? 'bg-blue-50 text-blue-700' :
-                    match.status === 'viewed' ? 'bg-yellow-50 text-yellow-700' :
-                    match.status === 'applied' ? 'bg-green-50 text-green-700' :
-                    'bg-gray-50 text-gray-700'
-                  }`}>
-                    {match.status === 'notified' ? 'New Match' :
-                     match.status === 'viewed' ? 'Viewed by Recruiter' :
-                     match.status === 'applied' ? 'Applied' :
-                     match.status}
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

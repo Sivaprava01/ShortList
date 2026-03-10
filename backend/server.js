@@ -30,6 +30,10 @@ const notificationRoutes = require("./routes/notificationRoutes");
 
 app.use("/notifications", notificationRoutes);
 
+const applicationRoutes = require("./routes/applicationRoutes");
+
+app.use("/applications", applicationRoutes);
+
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected - Shortlist DB"))
