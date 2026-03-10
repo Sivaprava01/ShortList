@@ -34,6 +34,14 @@ const applicationRoutes = require("./routes/applicationRoutes");
 
 app.use("/applications", applicationRoutes);
 
+const chatRoutes = require("./routes/chatRoutes");
+
+app.use("/chat", chatRoutes);
+
+const journeyRoutes = require("./routes/journeyRoutes");
+
+app.use("/journey", journeyRoutes);
+
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected - Shortlist DB"))

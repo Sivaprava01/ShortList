@@ -8,6 +8,8 @@ import {
   HiOutlineArrowRightOnRectangle,
   HiOutlinePlusCircle,
   HiOutlineTableCells,
+  HiOutlineChatBubbleLeftRight,
+  HiOutlineSparkles,
   HiBars3,
   HiXMark
 } from 'react-icons/hi2';
@@ -16,12 +18,15 @@ const candidateLinks = [
   { to: '/candidate/dashboard', label: 'Dashboard', icon: HiOutlineHome },
   { to: '/candidate/profile', label: 'Profile', icon: HiOutlineUser },
   { to: '/candidate/matches', label: 'Matches', icon: HiOutlineBriefcase },
+  { to: '/candidate/messages', label: 'Messages', icon: HiOutlineChatBubbleLeftRight },
+  { to: '/candidate/for-you', label: 'For You', icon: HiOutlineSparkles },
 ];
 
 const recruiterLinks = [
   { to: '/recruiter/dashboard', label: 'Dashboard', icon: HiOutlineHome },
   { to: '/recruiter/create-job', label: 'Create Job', icon: HiOutlinePlusCircle },
   { to: '/recruiter/jobs', label: 'Jobs', icon: HiOutlineTableCells },
+  { to: '/recruiter/messages', label: 'Messages', icon: HiOutlineChatBubbleLeftRight },
 ];
 
 export default function Sidebar({ role }) {

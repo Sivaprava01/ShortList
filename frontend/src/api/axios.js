@@ -36,4 +36,15 @@ export const getMyApplications = () => API.get('/applications/my-applications');
 export const getApplicationsForJob = (jobId) => API.get(`/applications/job/${jobId}`);
 export const updateApplicationStatus = (id, status) => API.put(`/applications/${id}/status`, { status });
 
+// Chat
+export const startChat = (jobId, candidateId) => API.post(`/chat/start/${jobId}/${candidateId}`);
+export const getMyChats = () => API.get('/chat/my-chats');
+export const getChatMessages = (chatId) => API.get(`/chat/${chatId}`);
+export const sendChatMessage = (chatId, text) => API.post(`/chat/message/${chatId}`, { text });
+
+// Journey
+export const createJourney = (data) => API.post('/journey', data);
+export const getJourneyFeed = () => API.get('/journey/feed');
+export const getJourneyById = (id) => API.get(`/journey/${id}`);
+
 export default API;

@@ -12,11 +12,14 @@ import Register from './pages/Register';
 import CandidateDashboard from './pages/candidate/Dashboard';
 import CandidateProfile from './pages/candidate/Profile';
 import CandidateMatches from './pages/candidate/Matches';
+import CandidateMessages from './pages/candidate/Messages';
+import ForYou from './pages/candidate/ForYou';
 import RecruiterDashboard from './pages/recruiter/Dashboard';
 import CreateJob from './pages/recruiter/CreateJob';
 import MyJobs from './pages/recruiter/MyJobs';
 import Matches from './pages/recruiter/Matches';
 import Applicants from './pages/recruiter/Applicants';
+import RecruiterMessages from './pages/recruiter/Messages';
 import Portfolio from './pages/Portfolio';
 
 export default function App() {
@@ -41,6 +44,8 @@ export default function App() {
               <Route path="dashboard" element={<CandidateDashboard />} />
               <Route path="profile" element={<CandidateProfile />} />
               <Route path="matches" element={<CandidateMatches />} />
+              <Route path="messages" element={<CandidateMessages />} />
+              <Route path="for-you" element={<ForYou />} />
             </Route>
 
             {/* Recruiter Routes */}
@@ -55,6 +60,7 @@ export default function App() {
               <Route path="jobs" element={<MyJobs />} />
               <Route path="matches/:jobId" element={<Matches />} />
               <Route path="jobs/:jobId/applicants" element={<Applicants />} />
+              <Route path="messages" element={<RecruiterMessages />} />
             </Route>
 
             {/* Catch all */}

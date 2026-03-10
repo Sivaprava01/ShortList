@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { getMatchesForJob, getJobById } from '../../api/axios';
-import { HiOutlineUser, HiOutlineXMark, HiOutlineLink, HiOutlineAcademicCap, HiOutlineWrenchScrewdriver, HiOutlineRocketLaunch } from 'react-icons/hi2';
+import { getMatchesForJob, getJobById, startChat } from '../../api/axios';
+import { HiOutlineUser, HiOutlineXMark, HiOutlineLink, HiOutlineAcademicCap, HiOutlineWrenchScrewdriver, HiOutlineRocketLaunch, HiOutlineChatBubbleLeftRight } from 'react-icons/hi2';
 
 function CandidateModal({ candidate, onClose }) {
   if (!candidate) return null;
@@ -113,6 +113,7 @@ export default function Matches() {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [startingChatId, setStartingChatId] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -131,6 +132,18 @@ export default function Matches() {
     };
     fetchData();
   }, [jobId]);
+
+  const handleStartChat = async (candidateId) => {
+    setStartingChatId(candidateId);
+    try {
+      await startChat(jobId, candidateId);
+      alert('Chat started! You can now message this candidate from the Messages page.');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to start chat');
+    } finally {
+      setStartingChatId(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -191,12 +204,22 @@ export default function Matches() {
                     <td className="px-6 py-4 text-sm text-[var(--text-primary)]">{match.scoreBreakdown?.experienceScore || 0}</td>
                     <td className="px-6 py-4 text-sm text-[var(--text-primary)]">{match.scoreBreakdown?.projectScore || 0}</td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => setSelectedCandidate(match.candidateProfile)}
-                        className="text-sm font-medium text-[var(--accent)] hover:underline"
-                      >
-                        View Profile
-                      </button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => setSelectedCandidate(match.candidateProfile)}
+                          className="text-sm font-medium text-[var(--accent)] hover:underline"
+                        >
+                          View Profile
+                        </button>
+                        <button
+                          onClick={() => handleStartChat(match.candidateProfile.userId)}
+                          disabled={startingChatId === match.candidateProfile.userId}
+                          className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-500/10 rounded-lg hover:bg-blue-500/20 transition-colors disabled:opacity-50"
+                        >
+                          <HiOutlineChatBubbleLeftRight className="w-3.5 h-3.5" />
+                          {startingChatId === match.candidateProfile.userId ? 'Starting...' : 'Start Chat'}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -233,12 +256,21 @@ export default function Matches() {
                     <div className="font-semibold text-[var(--text-primary)] text-sm">{match.scoreBreakdown?.projectScore || 0}</div>
                   </div>
                 </div>
-                <button
-                  onClick={() => setSelectedCandidate(match.candidateProfile)}
-                  className="w-full py-2 text-sm font-medium text-[var(--accent)] bg-[var(--accent)]/10 rounded-lg"
-                >
-                  View Profile
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setSelectedCandidate(match.candidateProfile)}
+                    className="flex-1 py-2 text-sm font-medium text-[var(--accent)] bg-[var(--accent)]/10 rounded-lg"
+                  >
+                    View Profile
+                  </button>
+                  <button
+                    onClick={() => handleStartChat(match.candidateProfile.userId)}
+                    disabled={startingChatId === match.candidateProfile.userId}
+                    className="flex-1 py-2 text-sm font-medium text-blue-600 bg-blue-500/10 rounded-lg disabled:opacity-50"
+                  >
+                    {startingChatId === match.candidateProfile.userId ? 'Starting...' : 'Start Chat'}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
