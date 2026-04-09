@@ -3,6 +3,20 @@ import { useParams } from 'react-router-dom';
 import { getMatchesForJob, getJobById, startChat } from '../../api/axios';
 import { HiOutlineUser, HiOutlineXMark, HiOutlineLink, HiOutlineAcademicCap, HiOutlineWrenchScrewdriver, HiOutlineRocketLaunch, HiOutlineChatBubbleLeftRight } from 'react-icons/hi2';
 
+function ScoreBar({ score, color }) {
+  return (
+    <div className="flex items-center gap-2">
+      <div className="flex-1 bg-primary rounded-full h-1.5">
+        <div
+          className={`h-1.5 rounded-full transition-all duration-700 ${color}`}
+          style={{ width: `${Math.min(score || 0, 100)}%` }}
+        />
+      </div>
+      <span className="text-xs font-semibold text-primary w-6 text-right">{score || 0}</span>
+    </div>
+  );
+}
+
 function CandidateModal({ candidate, onClose }) {
   if (!candidate) return null;
 
@@ -200,9 +214,9 @@ export default function Matches() {
                     <td className="px-6 py-4">
                       <span className="px-3 py-1 bg-[var(--accent)]/10 text-[var(--accent)] text-sm font-bold rounded-lg">{match.finalScore}</span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-[var(--text-primary)]">{match.scoreBreakdown?.skillScore || 0}</td>
-                    <td className="px-6 py-4 text-sm text-[var(--text-primary)]">{match.scoreBreakdown?.experienceScore || 0}</td>
-                    <td className="px-6 py-4 text-sm text-[var(--text-primary)]">{match.scoreBreakdown?.projectScore || 0}</td>
+                    <td className="px-6 py-4 w-28"><ScoreBar score={match.scoreBreakdown?.skillScore} color="bg-indigo-500" /></td>
+                    <td className="px-6 py-4 w-28"><ScoreBar score={match.scoreBreakdown?.experienceScore} color="bg-amber-500" /></td>
+                    <td className="px-6 py-4 w-28"><ScoreBar score={match.scoreBreakdown?.projectScore} color="bg-purple-500" /></td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
@@ -242,19 +256,11 @@ export default function Matches() {
                   </div>
                   <span className="px-3 py-1 bg-[var(--accent)]/10 text-[var(--accent)] text-sm font-bold rounded-lg">{match.finalScore}</span>
                 </div>
-                <div className="grid grid-cols-3 gap-2 text-center">
-                  <div className="p-2 bg-[var(--bg-primary)] rounded-lg">
-                    <div className="text-xs text-[var(--text-secondary)]">Skill</div>
-                    <div className="font-semibold text-[var(--text-primary)] text-sm">{match.scoreBreakdown?.skillScore || 0}</div>
-                  </div>
-                  <div className="p-2 bg-[var(--bg-primary)] rounded-lg">
-                    <div className="text-xs text-[var(--text-secondary)]">Exp</div>
-                    <div className="font-semibold text-[var(--text-primary)] text-sm">{match.scoreBreakdown?.experienceScore || 0}</div>
-                  </div>
-                  <div className="p-2 bg-[var(--bg-primary)] rounded-lg">
-                    <div className="text-xs text-[var(--text-secondary)]">Project</div>
-                    <div className="font-semibold text-[var(--text-primary)] text-sm">{match.scoreBreakdown?.projectScore || 0}</div>
-                  </div>
+                <div className="space-y-1.5 p-3 bg-primary rounded-xl">
+                  <div className="text-xs text-secondary mb-2 font-semibold uppercase tracking-wide">Score Breakdown</div>
+                  <div className="flex items-center gap-2"><HiOutlineWrenchScrewdriver className="w-3 h-3 text-indigo-500 shrink-0" /><ScoreBar score={match.scoreBreakdown?.skillScore} color="bg-indigo-500" /></div>
+                  <div className="flex items-center gap-2"><HiOutlineAcademicCap className="w-3 h-3 text-amber-500 shrink-0" /><ScoreBar score={match.scoreBreakdown?.experienceScore} color="bg-amber-500" /></div>
+                  <div className="flex items-center gap-2"><HiOutlineRocketLaunch className="w-3 h-3 text-purple-500 shrink-0" /><ScoreBar score={match.scoreBreakdown?.projectScore} color="bg-purple-500" /></div>
                 </div>
                 <div className="flex gap-2">
                   <button

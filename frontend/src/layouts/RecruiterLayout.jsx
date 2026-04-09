@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar';
 
 export default function RecruiterLayout() {
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-primary">
       <Sidebar role="recruiter" />
       <main className="flex-1 min-w-0">
         <Navbar />

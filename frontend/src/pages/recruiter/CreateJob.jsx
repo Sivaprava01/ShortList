@@ -39,8 +39,8 @@ export default function CreateJob() {
   const removeSkill = (field, i) => setForm(f => ({ ...f, [field]: f[field].filter((_, idx) => idx !== i) }));
   const updateSkill = (field, i, val) => setForm(f => ({ ...f, [field]: f[field].map((s, idx) => idx === i ? val : s) }));
 
-  const inputClass = "w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm";
-  const labelClass = "block text-sm font-medium text-gray-900 mb-1.5";
+  const inputClass = "w-full px-4 py-2.5 bg-[var(--bg-primary)] border border-[var(--border)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-secondary)] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm";
+  const labelClass = "block text-sm font-medium text-[var(--text-primary)] mb-1.5";
 
   return (
     <div className="space-y-6 pb-8">

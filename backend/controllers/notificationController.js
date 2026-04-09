@@ -31,3 +31,16 @@ exports.markAsRead = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// MARK ALL NOTIFICATIONS AS READ
+exports.markAllRead = async (req, res) => {
+  try {
+    await Notification.updateMany(
+      { userId: req.user._id, read: false },
+      { read: true }
+    );
+    res.json({ message: "All notifications marked as read" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

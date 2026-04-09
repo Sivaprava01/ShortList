@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { getMyChats, getChatMessages, sendChatMessage } from '../../api/axios';
+import { getMyChats, getChatMessages } from '../../api/axios';
 import { useAuth } from '../../context/AuthContext';
+import { useSocket } from '../../context/SocketContext';
 import {
   HiOutlineChatBubbleLeftRight,
   HiOutlinePaperAirplane,
@@ -56,6 +57,7 @@ function ChatWindow({ chatId, currentUserId }) {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef(null);
+  const { socket } = useSocket();
 
   useEffect(() => {
     if (!chatId) return;
@@ -72,14 +74,32 @@ function ChatWindow({ chatId, currentUserId }) {
     };
     fetchMessages();
 
-    const interval = setInterval(async () => {
-      try {
-        const res = await getChatMessages(chatId);
-        setMessages(res.data || []);
-      } catch (err) { /* silent */ }
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [chatId]);
+    // Join room
+    if (socket) {
+      socket.emit('join_room', chatId);
+    }
+
+    return () => {
+      if (socket) {
+        socket.emit('leave_room', chatId);
+      }
+    };
+  }, [chatId, socket]);
+
+  // Listen for incoming messages
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleReceiveMessage = (message) => {
+      setMessages(prev => [...prev, message]);
+    };
+
+    socket.on('receive_message', handleReceiveMessage);
+
+    return () => {
+      socket.off('receive_message', handleReceiveMessage);
+    };
+  }, [socket]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -87,12 +107,14 @@ function ChatWindow({ chatId, currentUserId }) {
 
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || sending) return;
+    if (!newMessage.trim() || sending || !socket) return;
 
     setSending(true);
     try {
-      const res = await sendChatMessage(chatId, newMessage.trim());
-      setMessages(prev => [...prev, res.data]);
+      socket.emit('send_message', {
+        chatId,
+        text: newMessage.trim()
+      });
       setNewMessage('');
     } catch (err) {
       alert(err.response?.data?.message || 'Failed to send message');
@@ -121,13 +143,13 @@ function ChatWindow({ chatId, currentUserId }) {
             const isOwn = msg.senderId?._id === currentUserId || msg.senderId === currentUserId;
             return (
               <div key={msg._id || i} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
-                <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                <div className={`max-w-[75%] px-4 py-2.5 rounded-xl text-sm leading-relaxed shadow-sm ${
                   isOwn
-                    ? 'bg-[var(--accent)] text-white rounded-br-md'
-                    : 'bg-[var(--hover)] text-[var(--text-primary)] rounded-bl-md'
+                    ? 'bg-blue-600 text-white rounded-br-none'
+                    : 'bg-[var(--bg-card)] text-[var(--text-primary)] border border-[var(--border)] rounded-bl-none'
                 }`}>
                   <p>{msg.text}</p>
-                  <div className={`text-[10px] mt-1 ${isOwn ? 'text-white/60' : 'text-[var(--text-secondary)]'}`}>
+                  <div className={`text-[10px] mt-1 ${isOwn ? 'text-blue-100' : 'text-[var(--text-secondary)]'}`}>
                     {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
                 </div>
@@ -150,7 +172,7 @@ function ChatWindow({ chatId, currentUserId }) {
           <button
             type="submit"
             disabled={!newMessage.trim() || sending}
-            className="p-2.5 bg-[var(--accent)] text-white rounded-xl hover:opacity-90 transition-colors disabled:opacity-50"
+            className="flex items-center justify-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
             <HiOutlinePaperAirplane className="w-5 h-5" />
           </button>

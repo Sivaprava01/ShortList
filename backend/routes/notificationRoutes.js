@@ -5,7 +5,8 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const {
   getNotifications,
-  markAsRead
+  markAsRead,
+  markAllRead
 } = require("../controllers/notificationController");
 
 // Get all notifications for logged-in user
@@ -13,5 +14,8 @@ router.get("/", authMiddleware, getNotifications);
 
 // Mark notification as read
 router.put("/read/:id", authMiddleware, markAsRead);
+
+// Mark all as read
+router.put("/read-all", authMiddleware, markAllRead);
 
 module.exports = router;

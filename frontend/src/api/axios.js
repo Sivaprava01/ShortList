@@ -47,4 +47,15 @@ export const createJourney = (data) => API.post('/journey', data);
 export const getJourneyFeed = () => API.get('/journey/feed');
 export const getJourneyById = (id) => API.get(`/journey/${id}`);
 
+// Saved Jobs
+export const saveJob = (jobId) => API.post(`/saved-jobs/${jobId}`);
+export const unsaveJob = (jobId) => API.delete(`/saved-jobs/${jobId}`);
+export const getSavedJobs = () => API.get('/saved-jobs');
+
+// Insights
+export const getRecruiterInsights = () => API.get('/insights/recruiter');
+
+// Notifications extended
+export const markAllNotificationsRead = () => API.put('/notifications/read-all');
+
 export default API;

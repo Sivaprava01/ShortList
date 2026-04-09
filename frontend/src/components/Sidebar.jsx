@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Logo from './Logo';
 import {
   HiOutlineHome,
   HiOutlineUser,
@@ -10,6 +11,7 @@ import {
   HiOutlineTableCells,
   HiOutlineChatBubbleLeftRight,
   HiOutlineSparkles,
+  HiOutlineBookmark,
   HiBars3,
   HiXMark
 } from 'react-icons/hi2';
@@ -18,6 +20,7 @@ const candidateLinks = [
   { to: '/candidate/dashboard', label: 'Dashboard', icon: HiOutlineHome },
   { to: '/candidate/profile', label: 'Profile', icon: HiOutlineUser },
   { to: '/candidate/matches', label: 'Matches', icon: HiOutlineBriefcase },
+  { to: '/candidate/saved-jobs', label: 'Saved Jobs', icon: HiOutlineBookmark },
   { to: '/candidate/messages', label: 'Messages', icon: HiOutlineChatBubbleLeftRight },
   { to: '/candidate/for-you', label: 'For You', icon: HiOutlineSparkles },
 ];
@@ -44,17 +47,15 @@ export default function Sidebar({ role }) {
     `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
       isActive
         ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+        : 'text-secondary hover:bg-hover hover:text-primary'
     }`;
 
   const sidebarContent = (
     <>
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-custom">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-sm">S</span>
-          </div>
-          <span className="text-lg font-bold text-gray-900">Shortlist</span>
+          <Logo size="md" clickable={true} />
+          <span className="text-lg font-bold text-primary">Shortlist</span>
         </div>
       </div>
 
@@ -72,10 +73,10 @@ export default function Sidebar({ role }) {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-custom">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 w-full transition-all duration-200"
+          className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-500/10 w-full transition-all duration-200"
         >
           <HiOutlineArrowRightOnRectangle className="w-5 h-5" />
           Logout
@@ -89,9 +90,9 @@ export default function Sidebar({ role }) {
       {/* Mobile hamburger */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed top-4 left-4 z-50 p-2 rounded-xl bg-white shadow-lg border border-gray-200 lg:hidden"
+        className="fixed top-4 left-4 z-50 p-2 rounded-xl bg-card shadow-lg border border-custom lg:hidden"
       >
-        <HiBars3 className="w-6 h-6 text-gray-900" />
+        <HiBars3 className="w-6 h-6 text-primary" />
       </button>
 
       {/* Mobile overlay */}
@@ -103,18 +104,18 @@ export default function Sidebar({ role }) {
       )}
 
       {/* Mobile sidebar */}
-      <aside className={`fixed top-0 left-0 h-full w-72 bg-white border-r border-gray-200 z-50 transform transition-transform duration-300 lg:hidden ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col`}>
+      <aside className={`fixed top-0 left-0 h-full w-72 bg-sidebar border-r border-custom z-50 transform transition-transform duration-300 lg:hidden ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col`}>
         <button
           onClick={() => setMobileOpen(false)}
-          className="absolute top-4 right-4 p-1 rounded-lg hover:bg-gray-100"
+          className="absolute top-4 right-4 p-1 rounded-lg hover:bg-hover"
         >
-          <HiXMark className="w-5 h-5 text-gray-600" />
+          <HiXMark className="w-5 h-5 text-secondary" />
         </button>
         {sidebarContent}
       </aside>
 
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:flex-col w-72 h-screen bg-white border-r border-gray-200 sticky top-0">
+      <aside className="hidden lg:flex lg:flex-col w-72 h-screen bg-sidebar border-r border-custom sticky top-0">
         {sidebarContent}
       </aside>
     </>

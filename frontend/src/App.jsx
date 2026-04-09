@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { SocketProvider } from './context/SocketContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import CandidateLayout from './layouts/CandidateLayout';
 import RecruiterLayout from './layouts/RecruiterLayout';
@@ -14,6 +15,7 @@ import CandidateProfile from './pages/candidate/Profile';
 import CandidateMatches from './pages/candidate/Matches';
 import CandidateMessages from './pages/candidate/Messages';
 import ForYou from './pages/candidate/ForYou';
+import SavedJobs from './pages/candidate/SavedJobs';
 import RecruiterDashboard from './pages/recruiter/Dashboard';
 import CreateJob from './pages/recruiter/CreateJob';
 import MyJobs from './pages/recruiter/MyJobs';
@@ -26,7 +28,8 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <BrowserRouter>
+        <SocketProvider>
+          <BrowserRouter>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Landing />} />
@@ -46,6 +49,7 @@ export default function App() {
               <Route path="matches" element={<CandidateMatches />} />
               <Route path="messages" element={<CandidateMessages />} />
               <Route path="for-you" element={<ForYou />} />
+              <Route path="saved-jobs" element={<SavedJobs />} />
             </Route>
 
             {/* Recruiter Routes */}
@@ -67,6 +71,7 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
+        </SocketProvider>
       </AuthProvider>
     </ThemeProvider>
   );

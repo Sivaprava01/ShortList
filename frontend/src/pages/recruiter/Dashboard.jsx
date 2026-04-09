@@ -1,26 +1,47 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { HiOutlineBriefcase, HiOutlineChartBar, HiOutlinePlusCircle } from 'react-icons/hi2';
-import { getMyJobs } from '../../api/axios';
+import { HiOutlineBriefcase, HiOutlineChartBar, HiOutlinePlusCircle, HiOutlineUsers, HiOutlineSparkles } from 'react-icons/hi2';
+import { getMyJobs, getRecruiterInsights } from '../../api/axios';
 import Card from '../../components/Card';
+
+function SkillBar({ name, count, max }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-xs text-primary font-medium">{name}</span>
+        <span className="text-xs text-secondary">{count}</span>
+      </div>
+      <div className="w-full bg-primary rounded-full h-1.5">
+        <div
+          className="h-1.5 rounded-full bg-indigo-500 transition-all duration-700"
+          style={{ width: `${max ? (count / max) * 100 : 0}%` }}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function RecruiterDashboard() {
   const [jobs, setJobs] = useState([]);
+  const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchJobs = async () => {
+    const fetchData = async () => {
       try {
-        const res = await getMyJobs();
-        setJobs(res.data || []);
+        const [jobRes, insightsRes] = await Promise.all([
+          getMyJobs(),
+          getRecruiterInsights().catch(() => ({ data: null }))
+        ]);
+        setJobs(jobRes.data || []);
+        setInsights(insightsRes.data);
       } catch (error) {
         console.error(error);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchJobs();
+    fetchData();
   }, []);
 
   if (loading) {
@@ -38,7 +59,10 @@ export default function RecruiterDashboard() {
     { label: 'Total Jobs', value: jobs.length, icon: HiOutlineBriefcase, color: 'from-indigo-500 to-indigo-600' },
     { label: 'Open Jobs', value: openJobs, icon: HiOutlineChartBar, color: 'from-emerald-500 to-emerald-600' },
     { label: 'Closed Jobs', value: closedJobs, icon: HiOutlineBriefcase, color: 'from-rose-500 to-pink-600' },
+    { label: 'Total Applicants', value: insights?.totalApplicants ?? '—', icon: HiOutlineUsers, color: 'from-amber-500 to-orange-500' },
   ];
+
+  const maxSkillCount = insights?.topSkills?.[0]?.count || 1;
 
   return (
     <div className="space-y-8">
@@ -47,13 +71,14 @@ export default function RecruiterDashboard() {
           <h2 className="text-2xl sm:text-3xl font-bold text-[var(--text-primary)]">Recruiter Dashboard</h2>
           <p className="text-[var(--text-secondary)] mt-1">Track job posts and run matching from one place.</p>
         </div>
-        <Link to="/recruiter/create-job" className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all disabled:opacity-50">
+        <Link to="/recruiter/create-job" className="flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-all">
           <HiOutlinePlusCircle className="w-5 h-5" />
           Create Job
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {/* Stats grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, index) => (
           <Card
             key={stat.label}
@@ -69,6 +94,49 @@ export default function RecruiterDashboard() {
         ))}
       </div>
 
+      {/* Insights Row */}
+      {insights && (
+        <div className="grid sm:grid-cols-2 gap-6">
+          {/* Avg match score */}
+          <Card className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-9 h-9 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                <HiOutlineSparkles className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[var(--text-primary)]">Avg Match Score</h3>
+                <p className="text-xs text-[var(--text-secondary)]">Across all matched candidates</p>
+              </div>
+            </div>
+            <div className="text-4xl font-bold text-indigo-500 mb-2">
+              {insights.avgMatchScore || 0}
+              <span className="text-lg text-[var(--text-secondary)] ml-1">/ 100</span>
+            </div>
+            <div className="w-full bg-primary rounded-full h-2">
+              <div
+                className="h-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-700"
+                style={{ width: `${insights.avgMatchScore || 0}%` }}
+              />
+            </div>
+          </Card>
+
+          {/* Top Skills */}
+          <Card className="p-6">
+            <h3 className="font-semibold text-[var(--text-primary)] mb-4">Top Skills in Candidate Pool</h3>
+            {insights.topSkills?.length > 0 ? (
+              <div className="space-y-2.5">
+                {insights.topSkills.slice(0, 6).map(skill => (
+                  <SkillBar key={skill.name} name={skill.name} count={skill.count} max={maxSkillCount} />
+                ))}
+              </div>
+            ) : (
+              <p className="text-[var(--text-secondary)] text-sm">Run matching on your jobs to see skill distribution.</p>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {/* Recent Jobs */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-[var(--text-primary)]">Recent Jobs</h3>
