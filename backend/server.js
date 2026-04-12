@@ -11,10 +11,16 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: [
+      process.env.FRONTEND_URL || "http://localhost:5173",
+      "https://shortlistrec.netlify.app",
+      "http://localhost:5173"
+    ],
     methods: ["GET", "POST"],
-    credentials: true
-  }
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"]
+  },
+  transports: ['websocket', 'polling']
 });
 
 app.use(cors());
@@ -65,9 +71,21 @@ const insightsRoutes = require("./routes/insightsRoutes");
 app.use("/insights", insightsRoutes);
 
 
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+  maxPoolSize: 10,
+  minPoolSize: 2,
+  retryWrites: true,
+  w: 'majority'
+})
 .then(() => console.log("MongoDB Connected - Shortlist DB"))
-.catch((err) => console.log(err));
+.catch((err) => {
+  console.error("MongoDB Connection Error:", err);
+  process.exit(1);
+});
 
 app.get("/", (req, res) => {
   res.send("Shortlist API Running...");

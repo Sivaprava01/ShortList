@@ -37,7 +37,7 @@ export default function Portfolio() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -45,10 +45,10 @@ export default function Portfolio() {
 
   if (error || !profile) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Profile Not Found</h1>
-          <p className="text-gray-600 mb-6">{error || 'This portfolio does not exist.'}</p>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2">Profile Not Found</h1>
+          <p className="text-[var(--text-secondary)] mb-6">{error || 'This portfolio does not exist.'}</p>
           <Link to="/" className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700 transition-colors">
             Go Home
           </Link>
@@ -58,7 +58,7 @@ export default function Portfolio() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50">
+    <div className="min-h-screen bg-[var(--bg-primary)]">
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-white">
         <div className="max-w-4xl mx-auto px-6 py-16 sm:py-24">
@@ -86,10 +86,10 @@ export default function Portfolio() {
       <div className="max-w-4xl mx-auto px-6 py-10 space-y-8">
         {/* Skills */}
         {profile.skills?.length > 0 && (
-          <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+          <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <HiOutlineWrenchScrewdriver className="w-5 h-5 text-indigo-600" />
-              <h2 className="text-xl font-bold text-gray-900">Skills</h2>
+              <h2 className="text-xl font-bold text-[var(--text-primary)]">Skills</h2>
             </div>
             <div className="flex flex-wrap gap-2">
               {profile.skills.map((skill, i) => (
@@ -100,7 +100,7 @@ export default function Portfolio() {
                       ? 'bg-indigo-50 border-indigo-200 text-indigo-700'
                       : skill.level === 'intermediate'
                       ? 'bg-amber-50 border-amber-200 text-amber-700'
-                      : 'bg-gray-50 border-gray-200 text-gray-600'
+                      : 'bg-[var(--bg-primary)] border-[var(--border)] text-[var(--text-secondary)]'
                   }`}
                 >
                   {skill.name}
@@ -114,16 +114,16 @@ export default function Portfolio() {
 
         {/* Projects */}
         {profile.projects?.length > 0 && (
-          <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+          <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <HiOutlineRocketLaunch className="w-5 h-5 text-purple-600" />
-              <h2 className="text-xl font-bold text-gray-900">Projects</h2>
+              <h2 className="text-xl font-bold text-[var(--text-primary)]">Projects</h2>
             </div>
             <div className="grid gap-4">
               {profile.projects.map((project, i) => (
-                <div key={i} className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                <div key={i} className="p-4 bg-[var(--bg-primary)] rounded-xl border border-[var(--border)]">
                   <div className="flex items-start justify-between">
-                    <h3 className="font-semibold text-gray-900">{project.title}</h3>
+                    <h3 className="font-semibold text-[var(--text-primary)]">{project.title}</h3>
                     {project.link && (
                       <a
                         href={project.link}
@@ -137,7 +137,7 @@ export default function Portfolio() {
                     )}
                   </div>
                   {project.description && (
-                    <p className="text-sm text-gray-600 mt-2 leading-relaxed">{project.description}</p>
+                    <p className="text-sm text-[var(--text-secondary)] mt-2 leading-relaxed">{project.description}</p>
                   )}
                   {project.techStack?.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-3">
@@ -156,19 +156,19 @@ export default function Portfolio() {
 
         {/* Experience */}
         {profile.experience?.length > 0 && (
-          <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+          <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <HiOutlineBriefcase className="w-5 h-5 text-blue-600" />
-              <h2 className="text-xl font-bold text-gray-900">Experience</h2>
+              <h2 className="text-xl font-bold text-[var(--text-primary)]">Experience</h2>
             </div>
             <div className="space-y-4">
               {profile.experience.map((exp, i) => (
-                <div key={i} className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <h3 className="font-semibold text-gray-900">{exp.role}</h3>
+                <div key={i} className="p-4 bg-[var(--bg-primary)] rounded-xl border border-[var(--border)]">
+                  <h3 className="font-semibold text-[var(--text-primary)]">{exp.role}</h3>
                   <p className="text-sm text-indigo-600 font-medium">{exp.company}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{exp.years} years</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-0.5">{exp.years} years</p>
                   {exp.description && (
-                    <p className="text-sm text-gray-600 mt-2 leading-relaxed">{exp.description}</p>
+                    <p className="text-sm text-[var(--text-secondary)] mt-2 leading-relaxed">{exp.description}</p>
                   )}
                   {exp.techStack?.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mt-2">
@@ -185,17 +185,17 @@ export default function Portfolio() {
 
         {/* Education */}
         {profile.education?.length > 0 && (
-          <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+          <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <HiOutlineAcademicCap className="w-5 h-5 text-amber-600" />
-              <h2 className="text-xl font-bold text-gray-900">Education</h2>
+              <h2 className="text-xl font-bold text-[var(--text-primary)]">Education</h2>
             </div>
             <div className="space-y-3">
               {profile.education.map((edu, i) => (
-                <div key={i} className="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                  <h3 className="font-semibold text-gray-900">{edu.degree}</h3>
-                  <p className="text-sm text-gray-600">{edu.institution}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">
+                <div key={i} className="p-4 bg-[var(--bg-primary)] rounded-xl border border-[var(--border)]">
+                  <h3 className="font-semibold text-[var(--text-primary)]">{edu.degree}</h3>
+                  <p className="text-sm text-[var(--text-secondary)]">{edu.institution}</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-0.5">
                     {edu.year && `Year: ${edu.year}`}
                     {edu.GPA ? ` · GPA: ${edu.GPA}` : ''}
                   </p>
@@ -207,10 +207,10 @@ export default function Portfolio() {
 
         {/* Links */}
         {(profile.portfolioLinks?.filter(l => l).length > 0 || profile.codingLinks?.filter(l => l).length > 0) && (
-          <section className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+          <section className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border)] p-6 shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <HiOutlineGlobeAlt className="w-5 h-5 text-emerald-600" />
-              <h2 className="text-xl font-bold text-gray-900">Links</h2>
+              <h2 className="text-xl font-bold text-[var(--text-primary)]">Links</h2>
             </div>
             <div className="space-y-2">
               {profile.portfolioLinks?.filter(l => l).map((link, i) => (
@@ -243,7 +243,7 @@ export default function Portfolio() {
 
         {/* Footer */}
         <div className="text-center pt-4 pb-8">
-          <p className="text-sm text-gray-400">Built with Shortlist</p>
+          <p className="text-sm text-[var(--text-secondary)]">Built with Shortlist</p>
           <Link to="/" className="text-sm text-indigo-600 hover:underline mt-1 inline-block">
             shortlist.app
           </Link>

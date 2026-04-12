@@ -27,14 +27,16 @@ export function SocketProvider({ children }) {
     }
 
     // Initialize socket connection
-    const newSocket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
+    const socketUrl = import.meta.env.VITE_API_URL || 'https://shortlist-qln0.onrender.com';
+    const newSocket = io(socketUrl, {
       auth: {
         token: token
       },
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
-      reconnectionAttempts: 5
+      reconnectionAttempts: 5,
+      transports: ['websocket', 'polling']
     });
 
     newSocket.on('connect', () => {
